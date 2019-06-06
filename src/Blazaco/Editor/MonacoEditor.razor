@@ -16,7 +16,7 @@ else
     IJSRuntime runtime { get; set; }
 
     [Parameter]
-    EditorModel Model { get; set; }
+    Blazaco.Editor.EditorModel Model { get; set; }
 
     [Parameter]
     int Width { get; set; } = 800;
@@ -29,26 +29,66 @@ else
 
     private bool _alreadyRendered = false;
 
+    private Blazaco.Editor.BlazacoJSInterop Interops;
+
     protected override async Task OnAfterRenderAsync()
     {
         if (!_alreadyRendered)
         {
-            _alreadyRendered = await BlazacoJSInterop.InitializeEditor(runtime, Model);
+            _alreadyRendered = await Interops.InitializeEditor();
         }
+        Interops = new Blazaco.Editor.BlazacoJSInterop(runtime, Model);
     }
 
     public async Task<string> GetValue()
     {
-        return await BlazacoJSInterop.GetValue(runtime, Model.Id);
+        return await Interops.InvokeEditorMethod<string>("getValue");
     }
 
-    public async Task<bool> SetValue(string newValue)
+    public async Task SetValue(string newValue)
     {
-        return await BlazacoJSInterop.SetValue(runtime, Model.Id, newValue);
+       await Interops.InvokeEditorMethod<bool>("setValue", newValue);
     }
 
-    public async Task<bool> SetTheme(string newTheme)
+    public async Task SetTheme(string newTheme)
     {
-        return await BlazacoJSInterop.SetTheme(runtime, Model.Id, newTheme);
+        await Interops.InvokeEditorMethod<bool>("setTheme", newTheme);
     }
+
+    public async Task Layout()
+    {
+        await Interops.InvokeEditorMethod<bool>("layout");
+    }
+    
+    public async Task<string> GetCurrentLineText()
+    {
+        var pos = await Interops.InvokeEditorMethod<object>("getPosition"); 
+        var lineContent = await Interops.InvokeEditorMethod<object>("getLineContent", 1); 
+
+        return "todo";
+        
+    }
+
+ //   public async Task<string> GetSelectedText()
+ //   {
+ //       return await JSRuntime.InvokeAsync<string>("Blazaco.Editor.GetSelectedText", new[] { _editorModel.Id });
+ //   }
+
+
+
+  //  public async Task RegisterAction(string actionId, string actionLabel, Action callback)
+  //  {
+  //      await JSRuntime.InvokeEditorMethod<object>(
+  //          "Blazaco.Editor.RegisterAction", 
+  //          new object[] 
+  //              { 
+  //                  _editorModel.Id, 
+  //                  actionId,
+  //                  actionLabel,
+  //                  new DotNetObjectRef(new EditorAction(callback)) 
+  //              });
+  //  }
+
+
+
 }

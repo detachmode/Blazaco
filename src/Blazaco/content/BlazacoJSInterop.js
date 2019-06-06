@@ -1,6 +1,15 @@
 ﻿window.Blazaco = window.Blazaco || {};
 window.Blazaco.Editors = [];
 
+
+function GetEditorByID(id) {
+    let myEditor = window.Blazaco.Editors.find(e => e.id === id);
+    if (!myEditor) {
+        throw `Could not find a editor with id: '${window.Blazaco.Editors.length}' '${id}'`;
+    }
+    return myEditor;
+}
+
 window.Blazaco.Editor = {
     InitializeEditor: function (model) {
         let thisEditor = monaco.editor.create(document.getElementById(model.id), model.options);
@@ -8,31 +17,22 @@ window.Blazaco.Editor = {
             return false;
         }
         else {
-            window.Blazaco.Editors.push({ id: model.id, editor: thisEditor});
+            window.Blazaco.Editors.push({ id: model.id, editor: thisEditor });
         }
         return true;
     },
-    GetValue: function (id) {
-        let myEditor = window.Blazaco.Editors.find(e => e.id === id);
-        if (!myEditor) {
-            throw `Could not find a editor with id: '${window.Blazaco.Editors.length}' '${id}'`;
-        }
-        return myEditor.editor.getValue();
+
+    CallEditorMethod: function (id, func, args) {
+        let myEditor = GetEditorByID(id);
+        return myEditor[func].apply(myEditor, args)
     },
-    SetValue: function (id, value) {
-        let myEditor = window.Blazaco.Editors.find(e => e.id === id);
-        if (!myEditor) {
-            throw `Could not find a editor with id: '${window.Blazaco.Editors.length}' '${id}'`;
-        }
-        myEditor.editor.setValue(value);
-        return true;
+
+    CallEditorModelMethod: function (id, func, args) {
+        let myEditor = GetEditorByID(id);
+        let model = myEditor.getModel()
+        return model[func].apply(model, args)
     },
-    SetTheme: function (id, theme) {
-        let myEditor = window.Blazaco.Editors.find(e => e.id === id);
-        if (!myEditor) {
-            throw `Could not find a editor with id: '${window.Blazaco.Editors.length}' '${id}'`;
-        }
-        monaco.editor.setTheme(theme);
-        return true;
-    }
+
 }
+
+
