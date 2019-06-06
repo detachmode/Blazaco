@@ -32,6 +32,9 @@ namespace Blazaco.Editor
         public Task<bool> InitializeEditor()
              => runtime.InvokeAsync<bool>("Blazaco.Editor.InitializeEditor", new[] { model });
 
+        public Task<object> EvalUnsafe(string code)
+             => runtime.InvokeAsync<object>("Blazaco.Editor.EvalUnsafe", new[] { model.Id, code });
+
         ///
         // public Task<T> CallEditorMethod<T>(string func, params object[] args) => InvokeEditorMethod<T>(func, args);
 

@@ -24,14 +24,33 @@ window.Blazaco.Editor = {
 
     CallEditorMethod: function (id, func, args) {
         let myEditor = GetEditorByID(id);
-        return myEditor[func].apply(myEditor, args)
+        let fun = myEditor[func];
+        if (!fun) {
+            let error = `Invalid function call '${func}' on editor`;
+            alert(error)
+            throw error;
+        }
+
+        return fun.apply(myEditor, args)
     },
 
     CallEditorModelMethod: function (id, func, args) {
         let myEditor = GetEditorByID(id);
-        let model = myEditor.getModel()
-        return model[func].apply(model, args)
+        let model = myEditor.editor.getModel()
+        let fun = model[func];
+        if (!fun) {
+            let error = `Invalid function call '${func}' on editor-model`;
+            alert(error)
+            throw error;
+        }
+
+        return fun.apply(model, args)
     },
+
+    EvalUnsafe: function (id, code) {
+        let myEditor = GetEditorByID(id);
+        return eval(code);
+    }
 
 }
 

@@ -33,46 +33,53 @@ else
 
     protected override async Task OnAfterRenderAsync()
     {
+        Interops = new Blazaco.Editor.BlazacoJSInterop(runtime, Model);
+
         if (!_alreadyRendered)
         {
+
             _alreadyRendered = await Interops.InitializeEditor();
         }
-        Interops = new Blazaco.Editor.BlazacoJSInterop(runtime, Model);
     }
 
     public async Task<string> GetValue()
     {
-        return await Interops.InvokeEditorMethod<string>("getValue");
+        return await Interops.InvokeEditorModelMethod<string>("getValue");
     }
 
     public async Task SetValue(string newValue)
     {
-       await Interops.InvokeEditorMethod<bool>("setValue", newValue);
+       await Interops.InvokeEditorModelMethod<bool>("setValue", newValue);
     }
 
     public async Task SetTheme(string newTheme)
     {
-        await Interops.InvokeEditorMethod<bool>("setTheme", newTheme);
+        await Interops.InvokeEditorModelMethod<bool>("setTheme", newTheme);
     }
 
     public async Task Layout()
     {
-        await Interops.InvokeEditorMethod<bool>("layout");
+        await Interops.InvokeEditorModelMethod<bool>("layout");
     }
     
-    public async Task<string> GetCurrentLineText()
+    public async Task<string> GetLineContent()
     {
-        var pos = await Interops.InvokeEditorMethod<object>("getPosition"); 
-        var lineContent = await Interops.InvokeEditorMethod<object>("getLineContent", 1); 
+        dynamic pos = await Interops.InvokeEditorMethod<object>("getPosition"); 
+        //Console.WriteLine(new {foo = "bar"});
+       
+       
+        var lineContent = await Interops.InvokeEditorModelMethod<string>("getLineContent", 1); 
 
-        return "todo";
+        return lineContent;
         
     }
 
- //   public async Task<string> GetSelectedText()
- //   {
- //       return await JSRuntime.InvokeAsync<string>("Blazaco.Editor.GetSelectedText", new[] { _editorModel.Id });
- //   }
+    public async Task<string> GetSelectedText()
+    {
+        var res = await Interops.EvalUnsafe(
+            "myEditor.editor.getModel().getValueInRange(myEditor.editor.getSelection());");
+        return res.ToString();
+    }
 
 
 

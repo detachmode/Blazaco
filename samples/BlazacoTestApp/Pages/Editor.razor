@@ -14,6 +14,7 @@
     </div>
     <div>
         <button onclick="@GetValue">Get Value</button>
+        <button onclick="@TestMe">Test</button>
     </div>
 </div>
 
@@ -48,6 +49,11 @@
     public async Task GetValue()
     {
         var val = await _editor.GetValue();
+        Console.WriteLine($"value is: {val}");
+    }
+    public async Task TestMe()
+    {
+        var val = await _editor.GetLineContent();
         Console.WriteLine($"value is: {val}");
     }
 }
